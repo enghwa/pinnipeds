@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: litellm-config.yaml
+data:
+  litellm-config.yaml: |
+      model_list: 
+        -  model_name: Meta-Llama-3.1-8B-Instruct
+           litellm_params:
+              model: huggingface/meta-llama/Meta-Llama-3.1-8B-Instruct
+              api_base: https://xxxxxxxyyyyyyyyyyyyyyyyy
+        -  model_name: sea-lionv2-llama3-8b
+           litellm_params:
+              model: openai/aisingapore/llama3-8b-cpt-sea-lionv2-instruct
+              additional_drop_params: ["extra_body"] 
+              api_base: http://xxxxxxxxxxxxxxxxxxxxxxxxx/v1
+              api_key: "sk-XXXXXXXXXXXX"
+           model_info:
+               version: 2   
+              

@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-llama3-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm-llama3-server
+  template:
+    metadata:
+      labels:
+        app: vllm-llama3-server
+    spec:
+      containers:
+      - name: inference-server
+        image: vllm/vllm-openai:v0.5.3.post1 # https://hub.docker.com/r/vllm/vllm-openai/tags
+        resources:
+          requests:
+            nvidia.com/gpu: 1
+          limits:
+            nvidia.com/gpu: 1
+        args:
+        - --model=$(MODEL_ID)
+        - --dtype=auto
+        - --enforce-eager
+        - --trust-remote-code
+        - --tensor-parallel-size=1
+        - --gpu-memory-utilization=0.99
+        - --max-model-len=8192 # llama3.1 131072
+        env:
+        - name: MODEL_ID
+          value: meta-llama/Meta-Llama-3.1-8B-Instruct
+        - name: PORT
+          value: "8000"
+        - name: HUGGING_FACE_HUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hf-secret
+              key: hf_api_token
+        volumeMounts:
+        - mountPath: /dev/shm
+          name: dshm
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-service
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
+spec:
+  selector:
+    app: vllm-llama3-server
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000

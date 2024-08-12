@@ -1,0 +1,53 @@
+# PostgreSQL StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql-db
+spec:
+  serviceName: postgresql-db-service
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: postgresql-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: postgresql-db
+    spec:
+      containers:
+      - name: postgresql-db
+        image: postgres:latest
+        ports:
+        - name: postgres
+          containerPort: 5432
+        env:
+        - name: POSTGRES_PASSWORD
+          value: testpassword
+        - name: PGDATA
+          value: /data/pgdata
+        volumeMounts:
+        - name: postgresql-db-disk
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: postgresql-db-disk
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 25Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-db
+  labels:
+    app.kubernetes.io/component: postgresql-db
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - port: 5432
+    name: postgresql-db
+  selector:
+    app.kubernetes.io/component: postgresql-db

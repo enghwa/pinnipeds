@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tei-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tei-server
+  template:
+    metadata:
+      labels:
+        app: tei-server
+    spec:
+      containers:
+      - name: tei-server
+        image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.5 #https://w.amazon.com/bin/viewrev/AWS/Teams/TFC/Reporting/
+        args:
+        - --model-id=$(MODEL_ID)
+        - --revision=$(REVISION)
+
+        env:
+        - name: MODEL_ID
+          value: BAAI/bge-large-en-v1.5
+        - name: REVISION
+          value: "refs/pr/13"
+        - name: MAX_BATCH_TOKENS
+          value: "32768" #"16384"
+        - name: MAX_CLIENT_BATCH_SIZE
+          value: "64" #32
+        - name: HUGGING_FACE_HUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hf-secret
+              key: hf_api_token
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tei-service
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
+
+spec:
+  selector:
+    app: tei-server
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+

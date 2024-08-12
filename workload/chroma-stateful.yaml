@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: chroma-ebs
+  namespace: default
+  # labels:    
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: chroma-ebs
+  serviceName: chroma
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: chroma-ebs
+    spec:
+      containers:
+      - name: chroma
+        image: "chromadb/chroma"
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: STORAGE_PATH
+          value: "/var/data"
+        ports:
+        - name: chroma
+          containerPort: 8000
+          protocol: TCP
+        volumeMounts:
+        - name: data
+          mountPath: /var/data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: gp2
+      resources:
+        requests:
+          storage: 30Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chroma
+  labels:
+    app.kubernetes.io/component: chroma-ebs
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - port: 8000
+    name: chroma
+  selector:
+    app.kubernetes.io/component: chroma-ebs

@@ -114,6 +114,9 @@ The container is configured with the specified model (`Meta-Llama-3-8B-Instruct`
 An AWS Network Load Balancer sits in front of the Kubernetes cluster, routing external traffic to the vLLM service.
 The service is accessible from the internet, allowing clients to send requests to the LLM model.
 
+## Observability
+[ vllm :: Obserbability with Prometheus and Grafana](observability.md)
+![image](./img/vllm-grafana-1.png)
 
 
 

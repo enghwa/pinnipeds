@@ -19,5 +19,9 @@ uncomment vllm portion and update accordingly.
 
 Note: In vllm, Prometheus metric logging is enabled by default in the OpenAI-compatible server. Inside EKS, if you have a kubernetes service called `vllm-service` in the `default` namespace, its metric endpoint will be `vllm-service.default.svc`
 
+
+![image](./img/vllm-grafana-1.png)
+![image](./img/vllm-grafana-2.png)
+
 reference:
 https://github.com/vllm-project/vllm/tree/main/examples/production_monitoring

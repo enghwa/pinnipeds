@@ -22,7 +22,7 @@ These Terraform scripts automate the creation of an Amazon EKS (Elastic Kubernet
 
 ```sh
 terraform init
-terrafom apply --auto-approve
+terraform apply --auto-approve
 
 ```
 ***Validate your EKS setup***
@@ -92,6 +92,7 @@ Install eks-node-viewer (https://github.com/awslabs/eks-node-viewer) to visualiz
 Now, let's visualize this setup with an architecture diagram:
 
 ```
+TBD
 ```
 
 vLLM on Kubernetes Architecture Diagram

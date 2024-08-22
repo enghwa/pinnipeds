@@ -20,6 +20,14 @@ These Terraform scripts automate the creation of an Amazon EKS (Elastic Kubernet
 
 
 
+**Note**:
+we are using EC2 spot as part of Karpenter nodepools. if this is the first time you are using EC2 spot do create the service link role
+```
+aws iam create-service-linked-role --aws-service-name spot.amazonaws.com
+```
+
+**Terraform IaC to setup the environment.**
+
 ```sh
 terraform init
 terraform apply --auto-approve

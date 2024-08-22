@@ -18,7 +18,7 @@ These Terraform scripts automate the creation of an Amazon EKS (Elastic Kubernet
     * **Right-Sizes Your Cluster:**  Karpenter automatically adds or removes EC2 based on your applications' exact resource needs (CPU, memory, GPU etc.) We will use Karpenter to spin up GPU instances to host our GenAI application and LLM.
     * **Saves You Money:** By using the most cost-effective server types (including spot instances), Karpenter optimizes your spending on cloud resources.
 
-
+![image](./img/ekswithkarpenter.png)
 
 **Note**:
 we are using EC2 spot as part of Karpenter nodepools. if this is the first time you are using EC2 spot do create the service link role

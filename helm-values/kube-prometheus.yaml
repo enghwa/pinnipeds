@@ -16,30 +16,20 @@ prometheus:
           resources:
             requests:
               storage: 50Gi
-alertmanager:
-  enabled: false
+    #http://vllm-service.default.svc/metrics
+    # additionalScrapeConfigs:
+    #   - job_name: vllm
+    #     honor_labels: true
+    #     scrape_interval: 1m
+    #     scrape_timeout: 10s
+    #     metrics_path: /metrics
+    #     scheme: http
+    #     dns_sd_configs:
+    #       - names:
+    #           - vllm-service.default.svc
+    #         type: 'A'
+    #         port: 80
 
-grafana:
-  enabled: true
-  defaultDashboardsEnabled: true
-prometheus:
-  prometheusSpec:
-    retention: 5h
-    scrapeInterval: 30s
-    evaluationInterval: 30s
-    scrapeTimeout: 10s
-    serviceMonitorSelectorNilUsesHelmValues: false # This is required to use the serviceMonitorSelector
-    storageSpec:
-      volumeClaimTemplate:
-        metadata:
-          name: data
-        spec:
-          storageClassName: ${storage_class_type}
-          accessModes:
-          - ReadWriteOnce
-          resources:
-            requests:
-              storage: 50Gi
 alertmanager:
   enabled: false
 

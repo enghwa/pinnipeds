@@ -10,3 +10,8 @@
 browse to http://localhost:8080/
 
 ```
+
+edit 
+https://github.com/enghwa/pinnipeds/blob/f207447725045432ac40aca2f1fe8653bfed4749/helm-values/kube-prometheus.yaml#L19 
+uncomment vllm portion and update accordingly
+

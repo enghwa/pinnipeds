@@ -206,7 +206,7 @@ module "data_addons" {
             values: ["g5"]
           - key: "karpenter.k8s.aws/instance-size"
             operator: In
-            values: [ "2xlarge", "4xlarge", "8xlarge", "", "12xlarge", "24xlarge"]
+            values: [ "xlarge", "2xlarge", "4xlarge", "8xlarge", "12xlarge", "24xlarge"]
           - key: "kubernetes.io/arch"
             operator: In
             values: ["amd64"]

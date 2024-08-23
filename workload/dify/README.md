@@ -3,6 +3,12 @@ TODO
 
 WIP
 
+```sh
+
+helm repo add dify https://borispolonsky.github.io/dify-helm
+helm install mydify dify/dify -f values.yaml
+
+```
 
 
 if we scale api/worker...

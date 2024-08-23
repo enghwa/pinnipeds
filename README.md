@@ -91,10 +91,21 @@ The Kubernetes `eht-vllm-llama3.yaml` manifest consists of two main parts: a Dep
 
 ```sh
 
-kubectl apply -f eht-vllm-llama3.yaml
+kubectl apply -f workload/eht-vllm-llama3.yaml
 
 ```
 Install eks-node-viewer (https://github.com/awslabs/eks-node-viewer) to visualize Karpenter spinning up a new EC2 with GPU.
+
+### Install Open WebUI for chat and RAG app with the our LLM.
+[Open WebUI](https://github.com/open-webui/open-webui)  is an extensible, feature-rich, and user-friendly self-hosted WebUI designed to operate entirely offline. It supports various LLM runners, including Ollama and OpenAI-compatible APIs. 
+
+```sh
+kubectl apply -f workload/open-webui.yaml
+```
+
+![image](./img/open-webui.png)
+
+
 
 
 Now, let's visualize this setup with an architecture diagram:

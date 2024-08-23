@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open-webui-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: open-webui-server
+  template:
+    metadata:
+      labels:
+        app: open-webui-server
+    spec:
+      containers:
+      - name: open-webui
+        image: kopi/openwebui
+        env:
+        - name: OPENAI_API_KEY
+          value: "xxx"
+        - name: OPENAI_API_BASE_URL
+          value: "http://vllm-service/v1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: open-webui-service
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
+spec:
+  selector:
+    app: open-webui-server
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080

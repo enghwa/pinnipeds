@@ -30,7 +30,7 @@ spec:
         - --max-model-len=8192 # llama3.1 131072
         env:
         - name: MODEL_ID
-          value: meta-llama/Meta-Llama-3.1-8B-Instruct
+          value: NousResearch/Hermes-3-Llama-3.1-8B
         - name: PORT
           value: "8000"
         - name: HUGGING_FACE_HUB_TOKEN

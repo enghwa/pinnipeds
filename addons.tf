@@ -110,10 +110,13 @@ module "eks_blueprints_addons" {
     }
   }
   karpenter = {
-    chart_version       = "v0.34.0"
+    chart_version       = "0.37.0"     # https://gallery.ecr.aws/karpenter/karpenter
     repository_username = data.aws_ecrpublic_authorization_token.token.user_name
     repository_password = data.aws_ecrpublic_authorization_token.token.password
   }
+
+
+  
 
   #---------------------------------------
   # Prommetheus and Grafana stack
@@ -147,16 +150,17 @@ module "eks_blueprints_addons" {
 #---------------------------------------------------------------
 module "data_addons" {
   source  = "aws-ia/eks-data-addons/aws"
-  version = "~> 1.32.0" # ensure to update this to the latest/desired version
+  version = "~> 1.33.0" # ensure to update this to the latest/desired version
 
   oidc_provider_arn = module.eks.oidc_provider_arn
 
   #---------------------------------------------------------------
-  # NVIDIA Device Plugin Add-on
+  # Neuron and NVIDIA Device Plugin Add-on
   #---------------------------------------------------------------
+  enable_aws_neuron_device_plugin  = true
   enable_nvidia_device_plugin = true
   nvidia_device_plugin_helm_config = {
-    version = "v0.14.5"
+    version =  "v0.16.1"
     name    = "nvidia-device-plugin"
     values = [
       <<-EOT
@@ -174,7 +178,7 @@ module "data_addons" {
   }
 
   #---------------------------------------------------------------
-  # Karpenter Resources Add-on
+  # Karpenter Resources Add-on # https://github.com/awslabs/data-on-eks/blob/main/ai-ml/jark-stack/terraform/addons.tf
   #---------------------------------------------------------------
   enable_karpenter_resources = true
   karpenter_resources_helm_config = {
@@ -207,6 +211,51 @@ module "data_addons" {
           - key: "karpenter.k8s.aws/instance-size"
             operator: In
             values: [ "xlarge", "2xlarge", "4xlarge", "8xlarge", "12xlarge", "24xlarge"]
+          - key: "kubernetes.io/arch"
+            operator: In
+            values: ["amd64"]
+          - key: "karpenter.sh/capacity-type"
+            operator: In
+            values: ["spot", "on-demand"]
+        limits:
+          cpu: 1000
+        disruption:
+          consolidationPolicy: WhenEmpty
+          consolidateAfter: 180s
+          expireAfter: 720h
+        weight: 100
+      EOT
+      ]
+    }
+    inf2-gpu-karpenter = {
+      values = [
+        <<-EOT
+      name: inf2-neuron-karpenter
+      clusterName: ${module.eks.cluster_name}
+      ec2NodeClass:
+        karpenterRole: ${split("/", module.eks_blueprints_addons.karpenter.node_iam_role_arn)[1]}
+        subnetSelectorTerms:
+          id: ${module.vpc.private_subnets[2]}
+        securityGroupSelectorTerms:
+          tags:
+            Name: ${module.eks.cluster_name}-node
+        instanceStorePolicy: RAID0
+
+      nodePool:
+        labels:
+          - type: karpenter
+          - NodeGroupType: inf2-neuron-karpenter
+        taints:
+          - key: aws.amazon.com/neuron
+            value: "true"
+            effect: "NoSchedule"
+        requirements:
+          - key: "karpenter.k8s.aws/instance-family"
+            operator: In
+            values: ["inf2"]
+          - key: "karpenter.k8s.aws/instance-size"
+            operator: In
+            values: [ "xlarge", "2xlarge", "8xlarge", "24xlarge", "48xlarge"]
           - key: "kubernetes.io/arch"
             operator: In
             values: ["amd64"]

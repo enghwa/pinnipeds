@@ -94,10 +94,10 @@ module "eks_blueprints_addons" {
   #---------------------------------------
   # Ingress Nginx Add-on
   #---------------------------------------
-  enable_ingress_nginx = true
-  ingress_nginx = {
-    values = [templatefile("${path.module}/helm-values/ingress-nginx-values.yaml", {})]
-  }
+  #enable_ingress_nginx = true
+  #ingress_nginx = {
+  #  values = [templatefile("${path.module}/helm-values/ingress-nginx-values.yaml", {})]
+  #}
 
   #---------------------------------------
   # Karpenter Autoscaler for EKS Cluster
